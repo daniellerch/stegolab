@@ -14,6 +14,6 @@
 * [pyEC](pyEC/): Integration with Python of the 
   [Kodovský's Ensemble Classifiers](http://dde.binghamton.edu/download/ensemble/) implemented in MATLAB. 
 
-* [CNN](cnn/): Convolutional Neural Networks for staganalysis using 
+* [CNN](CNN/): Convolutional Neural Networks for staganalysis using 
   [KERAS](https://keras.io). 
 
