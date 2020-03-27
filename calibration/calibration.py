@@ -18,9 +18,6 @@ def beta_kl(dct_0, dct_b, k, l):
     hb0 = H_i(dct_b, k, l, 0)
     hb1 = H_i(dct_b, k, l, 1)
 
-    if k==0 and l==1:
-        for i in range(20):
-            print(i, ":", float(H_i(dct_b, k, l, i)) / H_i(dct_0, k, l, i))
     return (h01*(hb0-h00) + (hb1-h01)*(h02-h01)) / (h01**2 + (h02-h01)**2)
 
 
@@ -35,7 +32,6 @@ def calibration(path):
         dct_b = im_jpeg["coef_arrays"][i]
         dct_0 = impred_jpeg["coef_arrays"][i]
         b01 = beta_kl(dct_0, dct_b, 0, 1)   
-        sys.exit(0)
         b10 = beta_kl(dct_0, dct_b, 1, 0)   
         b11 = beta_kl(dct_0, dct_b, 1, 1)
         beta = (b01+b10+b11)/3
