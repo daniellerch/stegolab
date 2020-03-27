@@ -5,10 +5,11 @@
 * [calibration.py](calibration/calibration.py): Calibration attack 
   to F5 like steganography.
 
-* [(JPEG) lsbr.py](jpeg_embedding/jpeg_lsbr.py): Embed a message by replacing 
+* [JPEG LSB replacement](jpeg/lsbr.py): Embed a message by replacing 
   the LSB of the non zero AC DCT coefficients (like JSteg).
 
-* [DCT](DCT/): Extract DCT coefficients from a JPEG image.
+* [dctdump](jpeg/dctdump.c): C program for reading DCT coefficients from a 
+  JPEG image.
 
 * [LSB matching](LSBm/): Hide and unhide information using LSB matching.
 
