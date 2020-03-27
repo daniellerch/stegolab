@@ -2,6 +2,13 @@
 
 ## Steganography and steganalysis code
 
+* [calibration.py](calibration/calibration.py): Calibration attack 
+  to F5 like steganography.
+
+* [jpeg_lsbr.py](jpeg_lsbr.py): Embed a message by replacing the LSB of the 
+  non zero AC DCT coefficients (like JSteg).
+
+
 * [DCT](DCT/): Extract DCT coefficients from a JPEG image.
 
 * [LSB matching](LSBm/): Hide and unhide information using LSB matching.
@@ -16,4 +23,6 @@
 
 * [CNN](CNN/): Convolutional Neural Networks for staganalysis using 
   [KERAS](https://keras.io). 
+
+
 
