@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import numpy
 import sys
@@ -28,14 +28,15 @@ if __name__ == "__main__":
 
     # Message
     m=numpy.array([0, 1, 1, 0])
+    m=numpy.array([0, 0, 1, 1])
 
     # Cover pixels
     c=numpy.array([0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0])
 
-    print "M=", M
-    print "H=", H
-    print "m=", m
-    print "c=", c
+    print("M=", M)
+    print("H=", H)
+    print("m=", m)
+    print("c=", c)
 
     # Solve Hx=m-Mc
     r=m-M.dot(c)
@@ -58,13 +59,13 @@ if __name__ == "__main__":
         v=numpy.insert(v, i, 0) 
 
     s = (c+v)%2 
-    print "s=", s
+    print("s=", s)
     
 
     # RECEIVER
     m=M.dot(s)
     m=m%2
-    print "m recovered=", m
+    print("m recovered=", m)
 
 
 
