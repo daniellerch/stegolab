@@ -8,7 +8,7 @@ import numpy as np
 import jpeg_toolbox as jt
 
 def H_i(dct, k, l, i):
-    dct_kl = dct[::k+8,::l+8].flatten()
+    dct_kl = dct[k::8,l::8].flatten()
     return sum(np.abs(dct_kl) == i)
 
 def beta_kl(dct_0, dct_b, k, l):
