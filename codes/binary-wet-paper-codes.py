@@ -36,6 +36,7 @@ if __name__ == "__main__":
     print("M=", M)
     print("H=", H)
     print("m=", m)
+    print("w=", w)
     print("c=", c)
 
     # Solve Hx=m-Mc
