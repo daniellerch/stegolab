@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# Implementation based on "Steganalysis of JPEG Images: Breaking the F5 Algorithm", J. Fridrich, 
+# M. Goljan, D. Hogea. (http://www.ws.binghamton.edu/fridrich/Research/f5.pdf).
+
 import os
 import sys
 import shutil
