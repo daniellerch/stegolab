@@ -6,6 +6,8 @@ from tensorflow.keras import optimizers
 from tensorflow.keras import initializers
 from tensorflow.keras import regularizers                                                                  
 
+# Deep Residual Network for Steganalysis of Digital Images. M. Boroumand, 
+# M. Chen, J. Fridrich. http://www.ws.binghamton.edu/fridrich/Research/SRNet.pdf
 
 def create_model(input_shape=None):
 
