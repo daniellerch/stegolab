@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 import numpy
 import sys
@@ -55,57 +55,57 @@ if __name__ == "__main__":
 
     # TODO: use key to mix matrix
 
-    print "------------------"
+    print("------------------")
     n_bits=3
     M=prepare_M(n_bits)
     m=numpy.array([1, 1, 0])
-    print "m real=", m
+    print("m real=", m)
     c=numpy.array([0, 1, 1, 0, 1, 0, 0])
     s=ME_hide_block(M, c, m)
-    print "cover:", c
-    print "stego:", s
+    print("cover:", c)
+    print("stego:", s)
     m_recovered=ME_unhide_block(M, s)
-    print "m_recovered=", m_recovered
+    print("m_recovered=", m_recovered)
 
 
 
-    print "------------------"
+    print("------------------")
     n_bits=4
     M=prepare_M(n_bits)
     m=numpy.array([1, 1, 0, 0])
-    print "m real=", m
+    print("m real=", m)
     c=numpy.array([0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0])
     s=ME_hide_block(M, c, m)
-    print "cover:", c
-    print "stego:", s
+    print("cover:", c)
+    print("stego:", s)
     m_recovered=ME_unhide_block(M, s)
-    print "m_recovered=", m_recovered
+    print("m_recovered=", m_recovered)
 
 
-    print "------------------"
+    print("------------------")
     n_bits=5
     M=prepare_M(n_bits)
     m=numpy.array([1, 1, 0, 0, 1])
-    print "m real=", m
+    print("m real=", m)
     c=numpy.array([0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0])
     s=ME_hide_block(M, c, m)
-    print "cover:", c
-    print "stego:", s
+    print("cover:", c)
+    print("stego:", s)
     m_recovered=ME_unhide_block(M, s)
-    print "m_recovered=", m_recovered
+    print("m_recovered=", m_recovered)
 
 
-    print "------------------"
+    print("------------------")
     n_bits=6
     M=prepare_M(n_bits)
     m=numpy.array([1, 1, 0, 0, 1, 1])
-    print "m real=", m
+    print("m real=", m)
     c=numpy.array([0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0])
     s=ME_hide_block(M, c, m)
-    print "cover:", c
-    print "stego:", s
+    print("cover:", c)
+    print("stego:", s)
     m_recovered=ME_unhide_block(M, s)
-    print "m_recovered=", m_recovered
+    print("m_recovered=", m_recovered)
 
 
 
