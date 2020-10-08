@@ -201,46 +201,49 @@ class STC:
         # }}}
 
 
-cover = np.array([
-    [200, 200, 201, 210, 251, 251, 251, 251],
-    [200, 200, 201, 240, 239, 239, 239, 239],
-    [201, 201, 201, 219, 234, 234, 234, 234],
-    [201, 201, 202, 210, 205, 205, 205, 205],
-    [202, 202, 210, 218, 215, 215, 215, 215],
-    [202, 202, 210, 218, 215, 215, 215, 215],
-    [203, 203, 213, 218, 228, 220, 235, 254],
-    [203, 203, 214, 219, 220, 231, 245, 255],
-])
+# Example
+if __name__ == "__main__":
 
-costs = np.array([
-    [100, 100,  99,  50,  50,  50,  50,  50],
-    [100, 100,  99,  50,  40,  40,  40,  40],
-    [100, 100,  99,  60,  50,  50,  50,  50],
-    [100, 100,  95,  60,  50,  60,  55,  55],
-    [100, 100,  80,  70,  70,  70,  70,  75],
-    [100, 100,  80,  70,  70,  70,  70,  75],
-    [100, 100,  80,  70,  70,  70,  70,  75],
-    [100, 100,  60,  60,  65,  60,  55, 999],
-])
+    cover = np.array([
+        [200, 200, 201, 210, 251, 251, 251, 251],
+        [200, 200, 201, 240, 239, 239, 239, 239],
+        [201, 201, 201, 219, 234, 234, 234, 234],
+        [201, 201, 202, 210, 205, 205, 205, 205],
+        [202, 202, 210, 218, 215, 215, 215, 215],
+        [202, 202, 210, 218, 215, 215, 215, 215],
+        [203, 203, 213, 218, 228, 220, 235, 254],
+        [203, 203, 214, 219, 220, 231, 245, 255],
+    ])
 
-
-print("costs:\n", costs)
-print("cover:\n", cover)
-
-message = "HELO".encode('utf8')
-print("Message to hide:", message)
-
-stcode = [71, 109] # See Table 1 for other good syndrome-trellis codes.
-stc = STC(stcode, 8) 
-print("cover len:", stc.code_n)
-print("message len:", np.sum(stc.code_shift))
-
-stego = stc.embed(cover, costs, message)
-print("stego:\n", stego)
+    costs = np.array([
+        [100, 100,  99,  50,  50,  50,  50,  50],
+        [100, 100,  99,  50,  40,  40,  40,  40],
+        [100, 100,  99,  60,  50,  50,  50,  50],
+        [100, 100,  95,  60,  50,  60,  55,  55],
+        [100, 100,  80,  70,  70,  70,  70,  75],
+        [100, 100,  80,  70,  70,  70,  70,  75],
+        [100, 100,  80,  70,  70,  70,  70,  75],
+        [100, 100,  60,  60,  65,  60,  55, 999],
+    ])
 
 
-extracted_message = stc.extract(stego)
-print("Extracted message:", extracted_message.decode())
+    print("costs:\n", costs)
+    print("cover:\n", cover)
+
+    message = "HELO".encode('utf8')
+    print("Message to hide:", message)
+
+    stcode = [71, 109] # See Table 1 for other good syndrome-trellis codes.
+    stc = STC(stcode, 8) 
+    print("cover len:", stc.code_n)
+    print("message len:", np.sum(stc.code_shift))
+
+    stego = stc.embed(cover, costs, message)
+    print("stego:\n", stego)
+
+
+    extracted_message = stc.extract(stego)
+    print("Extracted message:", extracted_message.decode())
 
 
 
