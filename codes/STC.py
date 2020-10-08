@@ -23,7 +23,7 @@
 
 # This implementation is based on the paper:
 # Minimizing Embedding Impact in Steganography using Trellis-Coded Quantization
-# by Tomas Filler, Jan Judas, and Jessica Fridrich.
+# by Tomáš Filler, Jan Judas, and Jessica Fridrich.
 
 # Part of this code is based on the Matlab implementation provided here: 
 # http://dde.binghamton.edu/download/syndrome/
