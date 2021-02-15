@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright (c) 2020 Daniel Lerch Hostalot. All rights reserved.
+# Copyright (c) 2021 Daniel Lerch Hostalot. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a 
 # copy of this software and associated documentation files (the "Software"), 
