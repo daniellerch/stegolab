@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright (c) 2021 Daniel Lerch Hostalot. All rights reserved.
+# Copyright (c) 2020 Daniel Lerch Hostalot. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a 
 # copy of this software and associated documentation files (the "Software"), 
@@ -90,7 +90,7 @@ if __name__ == "__main__":
 
     c_o = imread(sys.argv[1])
     m_i = sys.argv[3]
-    c_w = E_TRELLIS_8(c_o, m_i, sys.argv[2])
+    c_w = E_TRELLIS_8(c_o, m_i+"00", sys.argv[2])
     imwrite(sys.argv[4], c_w)
 
 
