@@ -111,10 +111,8 @@ class HC:
                 break
 
             # padding with zeros
-            if len(m_chunk)!=self.msg_len:
-                # XXX
-                m_chunk = np.array(m_chunk.tolist() + [0]*(self.msg_len-len(m_chunk)))
-                print("pad:", m_chunk)
+            # if len(m_chunk)!=self.msg_len:
+            #    m_chunk = np.array(m_chunk.tolist() + [0]*(self.msg_len-len(m_chunk)))
 
             column = (self.H.dot(c_chunk)-m_chunk)%self.code
 
