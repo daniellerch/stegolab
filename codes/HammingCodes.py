@@ -90,12 +90,8 @@ class HC:
         return bytes(enc)
         # }}}
 
-    def embed(self, cover, message):
+    def _embed(self, c, m):
         # {{{
-        shape = cover.shape
-        c = cover.flatten()
-        m = self._bytes_to_bits(message)
-        print(m)
 
         s = c.copy()
         i=j=0
@@ -103,12 +99,17 @@ class HC:
             m_chunk = m[i:i+self.msg_len]
             c_chunk = c[j:j+self.block_len]%self.code
 
+
             if len(m_chunk) == 0:
                 break
 
-            if len(m_chunk) > 0 and len(c_chunk)!=self.block_len:
-                print("WARNING: message too long")
-                break
+            if len(m_chunk) != self.msg_len:
+                print("ERROR: wrong message length:", m_chunk)
+                sys.exit(0)
+
+            if len(c_chunk)!=self.block_len:
+                print("ERROR: wrong cover length:", c_chunk)
+                sys.exit(0)
 
             # padding with zeros
             # if len(m_chunk)!=self.msg_len:
@@ -134,13 +135,44 @@ class HC:
             #if i+self.msg_len>len(m) or j+self.block_len>len(c):
             #    break
 
+        return s
+        # }}}
+
+    def embed(self, cover, message):
+        # {{{
+        shape = cover.shape
+        c = cover.flatten()
+
+        # Insert message length
+        l = len(message)
+        msg_len = l.to_bytes(4, 'big')
+
+        m = self._bytes_to_bits(msg_len)
+        # Left padding
+        while len(m) % self.msg_len != 0:
+            m = np.insert(m, 0, 0)
+
+        c_len =(len(m)//self.msg_len)*self.block_len
+        s_header = self._embed(c[:c_len], m)
+
+
+        # Insert the message
+        m = self._bytes_to_bits(message)
+
+        # Right padding
+        while len(m)%self.msg_len != 0:
+            m = np.append(m, 0)
+
+
+        s_content = self._embed(c[c_len:], m)
+
+        s = np.append(s_header, s_content, axis=0)
+
         return s.reshape(shape)
         # }}}
 
-    def extract(self, stego):
+    def _extract(self, s):
         # {{{ 
-        shape = cover.shape
-        s = stego.flatten()
         m = []
 
         for i in range(0, len(s), self.block_len):
@@ -150,7 +182,36 @@ class HC:
             m_chunk = self.H.dot(s_chunk)%self.code
             m += m_chunk.tolist()
 
-        message_bytes = self._bits_to_bytes(m)
+        return m
+        # }}}
+
+    def extract(self, stego):
+        # {{{
+        shape = cover.shape
+        s = stego.flatten()
+
+        # Read header
+        l = 4*8
+        while l%self.msg_len != 0:
+            l += 1
+
+        bytes_len =(l//self.msg_len)*self.block_len
+
+        m = self._extract(s[:bytes_len])
+        while (len(m))%8 != 0:
+            m = m[1:]
+
+        b = self._bits_to_bytes(m)
+        msg_len = int.from_bytes(b, 'big') 
+
+        # Read message
+        m = self._extract(s[bytes_len:])
+        while len(m)%8 != 0:
+            m.pop()
+
+
+        message_bytes = self._bits_to_bytes(m[:msg_len*8])
+
         return message_bytes
         # }}}
 
@@ -158,31 +219,28 @@ class HC:
 # Example
 if __name__ == "__main__":
 
-    cover = np.array([
-        [200, 200, 201, 210, 251, 251, 251, 251],
-        [200, 200, 201, 240, 239, 239, 239, 239],
-        [201, 201, 201, 219, 234, 234, 234, 234],
-        [201, 201, 202, 210, 205, 205, 205, 205],
-        [202, 202, 210, 218, 215, 215, 215, 215],
-        [202, 202, 210, 218, 215, 215, 215, 215],
-        [203, 203, 213, 218, 228, 220, 235, 254],
-        [203, 203, 214, 219, 220, 231, 245, 255],
-    ])
+    import imageio
+    cover = imageio.imread("image.png")
 
-    print(f"Cover:\n{cover}\n")
+    print(f"Cover:\n{cover[:10,:10,0]}\n")
 
-    message = "HELO".encode('utf8')
+
+    message = "Hello World".encode('utf8')
     print(f"Message to hide: {message}\n")
 
     hc = HC(3)
     print(f"Shared matrix H:\n{hc.H}\n")
 
-    stego = hc.embed(cover, message)
-    print(f"Stego:\n{stego}\n")
+    stego = cover.copy()
+    stego[:,:,0] = hc.embed(cover[:,:,0], message)
+    print(f"Stego:\n{stego[:10,:10,0]}\n")
 
-    extracted_message = hc.extract(stego)
+    imageio.imsave("stego.png", stego)
+
+    stego = imageio.imread("stego.png")
+    extracted_message = hc.extract(stego[:,:,0])
     print("Extracted message:", extracted_message.decode())
-
+    
 
 
 
