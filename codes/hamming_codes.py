@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright (c) 2022 Daniel Lerch Hostalot. All rights reserved.
+# Copyright (c) 2020 Daniel Lerch Hostalot. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a 
 # copy of this software and associated documentation files (the "Software"), 
@@ -21,9 +21,7 @@
 # DEALINGS IN THE SOFTWARE.
 
 
-# Matrix Embedding using ternary Hamming codes.
-
-
+# Matrix Embedding using binary Hamming codes.
 
 
 import sys
@@ -31,74 +29,55 @@ import random
 import numpy as np
 
 
-class HC3:
-
+class HC:
     def __init__(self, p, min_value=0, max_value=255):
         # {{{
-        self.code = 3 # ternary
+        self.code = 2 # binary
         self.msg_len = p
-        self.block_len = (self.code**p-1) // (3-1)
+        self.block_len = self.code**self.msg_len-1
+        self.gen_H()
         self.max_value=max_value
         self.min_value=min_value
-        self.H = self._prepare_H()
         # }}}
  
-    def _prepare_H(self):
+    def _n_ary(self, n):
         # {{{
-        n = self.msg_len
-        M=[]
-        l = len(np.base_repr(3**n-1, base=3))
-        for i in range(1, 3**n):
-            string = np.base_repr(i, base=3).zfill(l)
-            V = [ int(c) for c in string ]
-            lindep = False
-            for col in M:
-                if (np.array_equal(1*np.array(col)%self.code, V) or
-                    np.array_equal(2*np.array(col)%self.code, V) ):
-                    lindep = True
-                    break
-            if lindep:
-                continue
-            M.append(V)
-        M=np.array(M).T
-        return M
+        if n == 0:
+            return '0'
+        nums = []
+        while n:
+            n, r = divmod(n, self.code)
+            nums.append(str(r))
+        return ''.join(reversed(nums))
         # }}}
 
-    def _bytes_to_ternary(self, m):
+    def gen_H(self):
         # {{{
-        binary_string = ""
+        H = []
+        l = len(self._n_ary(self.block_len))
+        for i in range(1, self.code**self.msg_len):
+            string = self._n_ary(i).zfill(l)
+            V=[int(c) for c in string]
+            H.append(V)
+        self.H=np.array(H).T
+        # }}}
+
+    def _bytes_to_bits(self, m):
+        # {{{
+        bits=[]
         for b in m:
             for i in range(8):
-                binary_string += str((b >> i) & 1)
-
-        # Message as a big integer
-        bigint_m = int(binary_string, 2)
-
-        ternary_string = np.base_repr(bigint_m, base=3)
-        ternary = [int(c) for c in ternary_string ]
-
-        return np.array(ternary)
+                bits.append((b >> i) & 1)
+        return np.array(bits)
         # }}}
     
-    def _ternary_to_bytes(self, m):
+    def _bits_to_bytes(self, m):
         # {{{
-
-        ternary_string = "".join([ str(c) for c in m])
-
-        bigint_m = int(ternary_string, 3)
-        binary_string = np.base_repr(bigint_m, base=2)
-        m_list = [int(i) for i in binary_string]
-
-        l = (len(m_list)//8 + 1)*8
-        while len(m_list)<l:
-            m_list.insert(0, 0)
-
-        # make bytes from bits
         enc = bytearray()
         idx=0
         bitidx=0
         bitval=0
-        for b in m_list:
+        for b in m:
             if bitidx==8:
                 enc.append(bitval)
                 bitidx=0
@@ -120,6 +99,7 @@ class HC3:
             m_chunk = m[i:i+self.msg_len]
             c_chunk = c[j:j+self.block_len]%self.code
 
+
             if len(m_chunk) == 0:
                 break
 
@@ -128,29 +108,22 @@ class HC3:
                 sys.exit(0)
 
             if len(c_chunk)!=self.block_len:
-                print("ERROR: wrong cover length:", c_chunk)
+                print("ERROR: wrong cover length or message too long:", c_chunk)
                 sys.exit(0)
 
             column = (self.H.dot(c_chunk)-m_chunk)%self.code
 
             # Find position of column in H
-            position = 0
-            for v in self.H.T:
-                if np.array_equal(v, column): 
+            position = np.where(np.sum(np.abs(self.H.T-column), axis=1)==0)[0]
+
+            if len(position)>0:
+                v = s[j:j+self.block_len][position[0]]
+                add = random.choice([1, -1])
+                if v == self.max_value:
                     add = -1
-                    if s[j:j+self.block_len][position] - 1 < self.min_value:
-                        add = 2
-                    s[j:j+self.block_len][position] = \
-                        (s[j:j+self.block_len][position] + add)%self.code
-                    break
-                elif np.array_equal((v*2)%self.code, column):
+                elif v == self.min_value:
                     add = 1
-                    if s[j:j+self.block_len][position] + 1 > self.max_value:
-                        add = -2
-                    s[j:j+self.block_len][position] = \
-                        (s[j:j+self.block_len][position] + add)%self.code
-                    break
-                position += 1
+                s[j:j+self.block_len][position[0]] += add
 
             i += self.msg_len
             j += self.block_len
@@ -162,24 +135,12 @@ class HC3:
         # {{{
         shape = cover.shape
         c = cover.flatten()
-        m_message = self._bytes_to_ternary(message)
 
         # Insert message length
-        mx = 2**32-1
-        mx_msg_len = mx.to_bytes(4, 'big')
-        m = self._bytes_to_ternary(mx_msg_len)
-        mx_m_len = len(m)
-
-        l = len(m_message)
+        l = len(message)
         msg_len = l.to_bytes(4, 'big')
 
-
-        m = self._bytes_to_ternary(msg_len)
-
-
-        while len(m) < mx_m_len:
-            m = np.insert(m, 0, 0)
-
+        m = self._bytes_to_bits(msg_len)
         # Left padding
         while len(m) % self.msg_len != 0:
             m = np.insert(m, 0, 0)
@@ -189,14 +150,13 @@ class HC3:
 
 
         # Insert the message
-        message_bytes = self._ternary_to_bytes(m_message)
+        m = self._bytes_to_bits(message)
 
         # Right padding
-        while len(m_message)%self.msg_len != 0:
-            m_message = np.append(m_message, 0)
+        while len(m)%self.msg_len != 0:
+            m = np.append(m, 0)
 
-
-        s_content = self._embed(c[c_len:], m_message)
+        s_content = self._embed(c[c_len:], m)
 
         s = np.append(s_header, s_content, axis=0)
 
@@ -219,35 +179,33 @@ class HC3:
 
     def extract(self, stego):
         # {{{
-        shape = cover.shape
+        shape = stego.shape
         s = stego.flatten()
 
         # Read header
-        msg_len = (2**32-1).to_bytes(4, 'big')
-        l = len(self._bytes_to_ternary(msg_len))
+        l = 4*8
         while l%self.msg_len != 0:
             l += 1
 
         bytes_len =(l//self.msg_len)*self.block_len
 
         m = self._extract(s[:bytes_len])
+        while (len(m))%8 != 0:
+            m = m[1:]
 
-        b = self._ternary_to_bytes(m)
-        msg_len = int.from_bytes(b, 'big')
+        b = self._bits_to_bytes(m)
+        msg_len = int.from_bytes(b, 'big') 
 
         # Read message
         m = self._extract(s[bytes_len:])
         while len(m)%8 != 0:
             m.pop()
 
-        m = np.array(m)
-        m = m[:msg_len]
 
-        message_bytes = self._ternary_to_bytes(m)
+        message_bytes = self._bits_to_bytes(m[:msg_len*8])
 
         return message_bytes
         # }}}
-
 
 
 # Example
@@ -259,10 +217,10 @@ if __name__ == "__main__":
     print(f"Cover:\n{cover[:10,:10,0]}\n")
 
 
-    message = "Hello World asdas das".encode('utf8')
+    message = "Hello World".encode('utf8')
     print(f"Message to hide: {message}\n")
 
-    hc = HC3(3)
+    hc = HC(3)
     print(f"Shared matrix H:\n{hc.H}\n")
 
     stego = cover.copy()
@@ -274,7 +232,7 @@ if __name__ == "__main__":
     stego = imageio.imread("stego.png")
     extracted_message = hc.extract(stego[:,:,0])
     print("Extracted message:", extracted_message.decode())
- 
+    
 
 
 
