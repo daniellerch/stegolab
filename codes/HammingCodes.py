@@ -30,11 +30,11 @@ import numpy as np
 
 
 class HC:
-    def __init__(self, msg_len, min_value=0, max_value=255):
+    def __init__(self, p, min_value=0, max_value=255):
         # {{{
         self.code = 2 # binary
-        self.msg_len = msg_len
-        self.block_len = self.code**msg_len-1
+        self.msg_len = p
+        self.block_len = self.code**self.msg_len-1
         self.gen_H()
         self.max_value=max_value
         self.min_value=min_value
@@ -111,10 +111,6 @@ class HC:
                 print("ERROR: wrong cover length:", c_chunk)
                 sys.exit(0)
 
-            # padding with zeros
-            # if len(m_chunk)!=self.msg_len:
-            #    m_chunk = np.array(m_chunk.tolist() + [0]*(self.msg_len-len(m_chunk)))
-
             column = (self.H.dot(c_chunk)-m_chunk)%self.code
 
             # Find position of column in H
@@ -131,9 +127,6 @@ class HC:
 
             i += self.msg_len
             j += self.block_len
-
-            #if i+self.msg_len>len(m) or j+self.block_len>len(c):
-            #    break
 
         return s
         # }}}
