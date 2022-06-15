@@ -89,8 +89,7 @@ class HC3:
         binary_string = np.base_repr(bigint_m, base=2)
         m_list = [int(i) for i in binary_string]
 
-        l = (len(m_list)//8 + 1)*8
-        while len(m_list)<l:
+        while len(m_list)%8 != 0:
             m_list.insert(0, 0)
 
         # make bytes from bits
@@ -162,41 +161,41 @@ class HC3:
         # {{{
         shape = cover.shape
         c = cover.flatten()
-        m_message = self._bytes_to_ternary(message)
+        message_ternary = self._bytes_to_ternary(message)
+        self._ternary_to_bytes(message_ternary)
 
-        # Insert message length
-        mx = 2**32-1
-        mx_msg_len = mx.to_bytes(4, 'big')
-        m = self._bytes_to_ternary(mx_msg_len)
-        mx_m_len = len(m)
+        # -- Header --
 
-        l = len(m_message)
+        # Get the number of ternary symbols needed to hide the header
+        max_header_value = 2**32-1
+        total_header_bytes = max_header_value.to_bytes(4, 'big')
+        total_header_bytes_ternary = self._bytes_to_ternary(total_header_bytes)
+        total_header_length = len(total_header_bytes_ternary)
+
+        # Encode the message length in ternary
+        l = len(message_ternary)
         msg_len = l.to_bytes(4, 'big')
-
-
         m = self._bytes_to_ternary(msg_len)
 
-
-        while len(m) < mx_m_len:
+        # Left padding
+        while len(m) < total_header_length:
             m = np.insert(m, 0, 0)
 
-        # Left padding
         while len(m) % self.msg_len != 0:
             m = np.insert(m, 0, 0)
 
-        c_len =(len(m)//self.msg_len)*self.block_len
-        s_header = self._embed(c[:c_len], m)
+        header_length =(len(m)//self.msg_len)*self.block_len
+        s_header = self._embed(c[:header_length], m)
 
 
-        # Insert the message
-        message_bytes = self._ternary_to_bytes(m_message)
+        # -- Message --
 
         # Right padding
-        while len(m_message)%self.msg_len != 0:
-            m_message = np.append(m_message, 0)
+        while len(message_ternary)%self.msg_len != 0:
+            message_ternary = np.append(message_ternary, 0)
 
+        s_content = self._embed(c[header_length:], message_ternary)
 
-        s_content = self._embed(c[c_len:], m_message)
 
         s = np.append(s_header, s_content, axis=0)
 

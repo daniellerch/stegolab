@@ -102,7 +102,7 @@ class RC3:
         binary_string = np.base_repr(bigint_m, base=2)
         m_list = [int(i) for i in binary_string]
 
-        while len(m_list)%8 !=0:
+        while len(m_list)%8 != 0:
             m_list.insert(0, 0)
 
         # make bytes from bits

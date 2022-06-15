@@ -21,7 +21,7 @@
 # DEALINGS IN THE SOFTWARE.
 
 
-# Matrix Embedding using binary Hamming codes.
+# Matrix Embedding using binary random codes.
 
 
 import sys
@@ -43,9 +43,9 @@ class RC:
 
         # Prepare lookup table
         self.D = {}
-        for i in range(2**n):
+        for i in range(self.code**n):
             new_y = np.array([int(b) for b in list(bin(i)[2:].zfill(n))])
-            new_m = self.H.dot(new_y)%2
+            new_m = self.H.dot(new_y)%self.code
             if new_m.tobytes() in self.D:
                 self.D[new_m.tobytes()].append(new_y)
             else:
@@ -65,7 +65,6 @@ class RC:
                 continue
             lindep = False
             for col in H:
-                #if (np.array_equal(1*col, V) or np.array_equal(2*col, V) ):
                 if np.array_equal(col, V):
                     lindep = True
                     break
