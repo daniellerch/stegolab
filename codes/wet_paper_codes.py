@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.9
+#!/usr/bin/env python
 
 # Copyright (c) 2022 Daniel Lerch Hostalot. All rights reserved.
 #
