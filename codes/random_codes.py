@@ -31,6 +31,7 @@ import numpy as np
 
 class RC:
     def __init__(self, n, k, min_value=0, max_value=255):
+        # Embed n-k bits in n pixels. 
         # {{{
         self.code = 2 # binary
         self.n = n
