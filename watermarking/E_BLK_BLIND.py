@@ -75,7 +75,7 @@ if __name__ == "__main__":
         print("")
         sys.exit(0)
 
-    c_o = imread(sys.argv[1])
+    c_o = imread(sys.argv[1]).astype('int16')
     w_r = get_watermark_from_password(sys.argv[2], (8,8))
     c_w = E_BLK_BLIND(c_o, w_r, int(sys.argv[3]))
     imwrite(sys.argv[4], c_w)
