@@ -27,7 +27,7 @@
 #   by Vojtěch Holub, Jessica Fridrich and Tomáš Denemark.
 # - JPEG Steganography With Estimated Side-Information
 #   by Weixiang Li, Kejiang Chen, Weiming Zhang, Hang Zhou, Yaofei Wang and 
-#   Nenghai Yu
+#   Nenghai Yu.
 
 
 import os
