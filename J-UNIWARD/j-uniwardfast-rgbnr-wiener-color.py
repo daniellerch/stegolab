@@ -244,14 +244,12 @@ def cost_fn(coeffs, spatial, quant):
             spatial_impact[i, j] = invDCT(test_coeffs) * quant[i, j]
 
 
-    # Pre-compute impact in spatial domain when a jpeg coefficient is changed by 1
     # Pre compute impact on wavelet coefficients when a jpeg coefficient is changed by 1
     #wavelet_impact = {}
     wavelet_impact_array = np.zeros((len(F), 8, 8, 23, 23))
     for f_index in range(len(F)):
         for i in range(8):
             for j in range(8):
-                #wavelet_impact[f_index, i, j] = scipy.signal.correlate2d(spatial_impact[i, j], F[f_index], mode='full', boundary='fill', fillvalue=0.) # XXX
                 wavelet_impact_array[f_index, i, j, :, :] = scipy.signal.correlate2d(spatial_impact[i, j], F[f_index], mode='full', boundary='fill', fillvalue=0.)
 
 
@@ -262,7 +260,6 @@ def cost_fn(coeffs, spatial, quant):
     # Create reference cover wavelet coefficients (LH, HL, HH)
     pad_size = 16 # XXX
     spatial_padded = np.pad(spatial, (pad_size, pad_size), 'symmetric')
-    #print(spatial_padded.shape)
 
     RC = []
     for i in range(len(F)):
@@ -285,20 +282,8 @@ def cost_polarization(rho, coeffs, spatial, quant):
     rho_p1 = rho.copy()
 
     m = 0.65
-
-
-    #lMean = scipy.signal.correlate(spatial, np.ones((3,3)), 'same') / np.prod((2,2), axis=0)
-    #lVar = (scipy.signal.correlate(spatial**2, np.ones((3,3)), 'same') / np.prod((3,3), axis=0)-lMean**2)
-    #noise = np.mean(np.ravel(lVar), axis=0)
-    #print("noise:", noise, "local mean:", lMean, "local var:", lVar)
-
-
-    #precover = scipy.signal.wiener(spatial, (3,3), noise=0.1) # v1 #Podria ser parecido a una simple media
-    precover = scipy.signal.wiener(spatial, (3,3)) # v2 Este debe ser el correcto
-    #precover = scipy.signal.wiener(spatial, (3,3), noise=1) # v3
+    precover = scipy.signal.wiener(spatial, (3,3)) 
     coeffs_estim = compress(precover, quant)
-
-    #os.system("convert -chop 4x4 "+path+" "+predfile)
 
     # polarize
     s = np.sign(coeffs_estim-coeffs)
