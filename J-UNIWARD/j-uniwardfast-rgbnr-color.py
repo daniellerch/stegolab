@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 
-# Copyright (c) 2020 Daniel Lerch Hostalot. All rights reserved.
+# Copyright (c) 2023 Daniel Lerch Hostalot. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a 
 # copy of this software and associated documentation files (the "Software"), 
@@ -25,8 +25,6 @@
 # This implementation is based on the paper:
 # Universal Distortion Function for Steganography in an Arbitrary Domain
 # by Vojtěch Holub, Jessica Fridrich and Tomáš Denemark.
-
-# XXX Fast implementation using Numba XXX
 
 
 import os
