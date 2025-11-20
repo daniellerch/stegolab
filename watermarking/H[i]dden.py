@@ -464,7 +464,7 @@ if __name__ == '__main__':
     print(f"\nPrivate Key (a): {SK_a.bit_length()} bits long")
     print(f"Public Key (K): {PK['K'].symmetrize_display(P)} (Symmetric)")
 
-# --- ElGamal Test Cases ---
+    # --- ElGamal Test Cases ---
     print("\n=======================================================")
     print("--- Encryption Test Cases (Symmetric Range) ---")
     print("=======================================================")
@@ -526,81 +526,82 @@ if __name__ == '__main__':
     print(f"2. Rational Division: ({Z1_FLOAT}) / ({Z2_FLOAT})")
     print(f"   Result: {RESULT_FLOAT[0]} + {RESULT_FLOAT[1]}i (Type: {type(RESULT_FLOAT).__name__})")
 
-# DC chooses lambda
 
-print("\n=======================================================")
-print("---            Watermarking Test Cases              ---")
-print("=======================================================\n")
+    # DC chooses lambda
 
-print("1. DC chooses lambda")
+    print("\n=======================================================")
+    print("---            Watermarking Test Cases              ---")
+    print("=======================================================\n")
 
-lambda_ini = GaussianInteger(3,2)
-lambda_p = lambda_ini._mod(P)
+    print("1. DC chooses lambda")
 
-
-print(f"Lambda (Symmetric Input): {lambda_ini.symmetrize_display(P)}\n")
-
-E_lambda , B1_USED = encrypt(lambda_p, PK)
-
-print("2. DC encrypts lambda")
-print(f"  Using Ephemeral Key b1: {B1_USED.bit_length()} bits long")
-print(f"Encrypted lambda: {E_lambda}\n")
-
-# S sets data and watemark
-
-print("3. S forms delta")
-
-d = 5
-
-w = 4
-
-delta = GaussianInteger(d,w)
-
-delta_p = delta._mod(P)
-
-print(f"Using data: {d} and watermark: {w}")
-print(f"Delta (Symmetric Input): {delta.symmetrize_display(P)}\n")
-
-print("4. S encrypts delta")
-E_delta , B2_USED = encrypt(delta_p, PK)
-
-print(f"  Using Ephemeral Key b2: {B2_USED.bit_length()} bits long")
-print(f"Encrypted delta: {E_delta}\n")
-
-print("5. S multiplies in the encrypted domain")
-
-E_lambda_delta = ciphertext_multiply(E_lambda, E_delta, P)
+    lambda_ini = GaussianInteger(3,2)
+    lambda_p = lambda_ini._mod(P)
 
 
-print(f"Encrypted product: {E_lambda_delta}\n")
+    print(f"Lambda (Symmetric Input): {lambda_ini.symmetrize_display(P)}\n")
 
-# S decrypts
+    E_lambda , B1_USED = encrypt(lambda_p, PK)
 
-print("6. DC decrypts lambda * delta")
+    print("2. DC encrypts lambda")
+    print(f"  Using Ephemeral Key b1: {B1_USED.bit_length()} bits long")
+    print(f"Encrypted lambda: {E_lambda}\n")
 
-lambda_delta = decrypt(E_lambda_delta, SK_a, PK)
+    # S sets data and watemark
 
-print(f"Decrypted product: {lambda_delta}\n")
+    print("3. S forms delta")
 
-# S divides by lambda
+    d = 5
 
-print("7. DC divides lambda * delta by lambda")
+    w = 4
 
-delta_rec = lambda_delta.divide_by_gaussian(lambda_ini)
+    delta = GaussianInteger(d,w)
 
-print(f"Recovered delta: {delta_rec}\n")
+    delta_p = delta._mod(P)
 
-extracted_w = delta_rec.b
+    print(f"Using data: {d} and watermark: {w}")
+    print(f"Delta (Symmetric Input): {delta.symmetrize_display(P)}\n")
+
+    print("4. S encrypts delta")
+    E_delta , B2_USED = encrypt(delta_p, PK)
+
+    print(f"  Using Ephemeral Key b2: {B2_USED.bit_length()} bits long")
+    print(f"Encrypted delta: {E_delta}\n")
+
+    print("5. S multiplies in the encrypted domain")
+
+    E_lambda_delta = ciphertext_multiply(E_lambda, E_delta, P)
 
 
-print("8. DC extracts and verifies the watemark")
+    print(f"Encrypted product: {E_lambda_delta}\n")
 
-print(f"Extracted watermark: {extracted_w}")
+    # S decrypts
 
-print("Watermark verification succeeded!\n")
+    print("6. DC decrypts lambda * delta")
 
-print("9. DC recovers the original data")
+    lambda_delta = decrypt(E_lambda_delta, SK_a, PK)
 
-extracted_d = delta_rec.a
+    print(f"Decrypted product: {lambda_delta}\n")
 
-print(f"Extracted data: {extracted_d}\n")
+    # S divides by lambda
+
+    print("7. DC divides lambda * delta by lambda")
+
+    delta_rec = lambda_delta.divide_by_gaussian(lambda_ini)
+
+    print(f"Recovered delta: {delta_rec}\n")
+
+    extracted_w = delta_rec.b
+
+
+    print("8. DC extracts and verifies the watemark")
+
+    print(f"Extracted watermark: {extracted_w}")
+
+    print("Watermark verification succeeded!\n")
+
+    print("9. DC recovers the original data")
+
+    extracted_d = delta_rec.a
+
+    print(f"Extracted data: {extracted_d}\n")
